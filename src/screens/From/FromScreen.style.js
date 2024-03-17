@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#d3d3d3d3',
   },
   origin: {color: 'black', fontWeight: 'bold', fontSize: 20},
+  textColor: {color: 'black'},
 });
 
 export default styles;

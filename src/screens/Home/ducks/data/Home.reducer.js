@@ -3,21 +3,30 @@ import {createSlice} from '@reduxjs/toolkit';
 const homeSlice = createSlice({
   name: 'home',
   initialState: {
-    loading: false,
+    loading: true,
     destination: '',
     origin: '',
+    response: [],
+    err: false,
+    date: new Date(),
   },
   reducers: {
     fetchData(state, action) {
-      state.loading = action.payload;
+      (state.response = action.payload.response),
+        (state.err = action.payload.err),
+        (state.loading = action.payload.loading);
     },
     setOriginAndDestinationData(state, action) {
       (state.destination = action.payload.destination),
         (state.origin = action.payload.origin);
     },
+    selectedDate(state, action) {
+      state.date = action.payload;
+    },
   },
 });
 
-export const {fetchData, setOriginAndDestinationData} = homeSlice.actions;
+export const {fetchData, setOriginAndDestinationData, selectedDate} =
+  homeSlice.actions;
 
 export default homeSlice.reducer;

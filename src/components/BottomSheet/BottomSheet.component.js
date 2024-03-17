@@ -1,11 +1,17 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {FlatList, Text, TextInput, TouchableOpacity, View} from 'react-native';
-import styles from './FromScreen.style';
+import React, {useState} from 'react';
+import {
+  Modal,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import scalling from '../../config/normalize';
 import SvgHandler from '../../assets/svgs/SvgHandler';
 import {svgXml} from '../../assets/svgs/list';
-import {useNavigation} from '@react-navigation/native';
-import {useDispatch} from 'react-redux';
-import {setOriginAndDestinationData} from '../Home/ducks/data/Home.reducer';
+import Checkbox from '../Checkbox/Checkbox.componnet';
+const {normalize, widthScale, heightScale} = scalling;
 
 const origin = [
   {
@@ -290,116 +296,128 @@ const origin = [
   },
 ];
 
-const RenderItem = ({item, onPress}) => {
-  return (
-    <TouchableOpacity
-      style={styles.itemContainer}
-      onPress={() => onPress(item)}>
-      <View style={styles.gate}>
-        <Text style={styles.textColor}>{item.gate}</Text>
-      </View>
-      <View>
-        <Text style={styles.origin}>{item?.origin}</Text>
-        <Text
-          style={styles.textColor}>{`${item.aircraft}, ${item.airline}`}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-};
+const BottomSheet = ({visible, onClose, filterCriteria, data}) => {
+  const [selectedAirlines, setSelectedAirlines] = useState({});
 
-const From = () => {
-  const [selectedData, setSelectedData] = useState({
-    origin: '',
-    destination: '',
-  });
-
-  const [focusedInput, setFocusedInput] = useState(null);
-
-  const dispatch = useDispatch();
-
-  const handleFocus = inputName => {
-    setFocusedInput(inputName);
+  const handleCheck = item => {
+    setSelectedAirlines(prevSelected => ({
+      ...prevSelected,
+      [item]: !prevSelected[item],
+    }));
   };
 
-  const handleBlur = () => {
-    // setFocusedInput(null);
+  const handleClear = () => {
+    setSelectedAirlines({});
+    filterCriteria([]);
   };
 
-  const navigation = useNavigation();
-
-  const handleBack = () => {
-    navigation.goBack();
+  const handleSelectAll = () => {
+    const allSelected = data.reduce((acc, item) => {
+      acc[item] = true;
+      return acc;
+    }, {});
+    setSelectedAirlines(allSelected);
   };
 
-  const handleItemPress = item => {
-    if (focusedInput === 'input1') {
-      setSelectedData(prev => ({...prev, origin: item.origin}));
-      if (selectedData.destination !== '') {
-        dispatch(
-          setOriginAndDestinationData({
-            origin: item.origin,
-            destination: selectedData.destination,
-          }),
-        );
-        navigation.goBack();
-      }
-    } else if (focusedInput === 'input2') {
-      setSelectedData(prev => ({...prev, destination: item.origin}));
-      if (selectedData.origin !== '') {
-        dispatch(
-          setOriginAndDestinationData({
-            destination: item.origin,
-            origin: selectedData.origin,
-          }),
-        );
-        navigation.goBack();
-      }
-    }
+  const applyFilter = () => {
+    const selected = Object.keys(selectedAirlines).filter(
+      key => selectedAirlines[key],
+    );
+    filterCriteria(selected);
+    onClose();
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.backIconContainer}>
-        <TouchableOpacity onPress={handleBack} style={{marginTop: 16}}>
-          <SvgHandler xml={svgXml.backIcon} height={32} width={32} />
-        </TouchableOpacity>
+    <Modal visible={visible} transparent={true}>
+      <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.4)'}}>
+        <View
+          style={{
+            backgroundColor: '#fff',
+            marginTop: 'auto',
+            paddingTop: heightScale(30),
+            borderTopLeftRadius: normalize(32),
+            borderTopRightRadius: normalize(32),
+          }}>
+          <View style={{}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingHorizontal: widthScale(20),
+                borderBottomWidth: 1,
+                borderColor: '#e3e3e3',
+                marginBottom: 12,
+                paddingBottom: 12,
+              }}>
+              <Pressable
+                onPress={handleSelectAll}
+                style={{
+                  backgroundColor: 'green',
+                  padding: 10,
+                  borderRadius: 8,
+                }}>
+                <Text style={{color:"black"}}>select all</Text>
+              </Pressable>
+              <Pressable onPress={onClose}>
+                <SvgHandler xml={svgXml.cross} height={20} width={20} />
+              </Pressable>
+            </View>
 
-        <View style={{flex: 1, marginVertical: 12}}>
-          <View style={[styles.headerRight, {marginBottom: 8}]}>
-            <TextInput
-              style={styles.headerText}
-              onFocus={() => handleFocus('input1')}
-              onBlur={handleBlur}
-              autoFocus={true}
-              placeholder="Origin city/airport code"
-              value={selectedData.origin}
-              placeholderTextColor="#a3a3a3"
-            />
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                flexGrow: 1,
+                paddingHorizontal: widthScale(20),
+              }}>
+              {data.map((item, index) => (
+                <Checkbox
+                  key={index}
+                  label={item}
+                  handleCheck={() => handleCheck(item)}
+                  initialValue={!!selectedAirlines[item]}
+                />
+              ))}
+            </ScrollView>
           </View>
-          <View style={styles.headerRight}>
-            <TextInput
-              style={styles.headerText}
-              onFocus={() => handleFocus('input2')}
-              onBlur={handleBlur}
-              placeholder="Destination city/airport code"
-              value={selectedData.destination}
-              placeholderTextColor="#a3a3a3"
-            />
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              borderTopWidth: 1,
+              borderColor: '#e3e3e3',
+              padding: 12,
+            }}>
+            <TouchableOpacity
+              onPress={handleClear}
+              style={{
+                backgroundColor: '#f3f3f3',
+                padding: 12,
+                borderRadius: 12,
+                minWidth: '30%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Text style={{color:"black"}}>Clear</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                backgroundColor: 'rgb(182, 125, 186)',
+                padding: 12,
+                borderRadius: 12,
+                minWidth: '30%',
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'center',
+              }}
+              onPress={applyFilter}>
+              <SvgHandler xml={svgXml.filter} height={32} width={32} />
+              <Text style={{color:"black"}}>Apply filters</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
-      <View style={styles.list}>
-        <FlatList
-          data={origin}
-          renderItem={({item}) => (
-            <RenderItem item={item} onPress={handleItemPress} />
-          )}
-          keyExtractor={(item, index) => index.toString()}
-          showsVerticalScrollIndicator={false}
-        />
-      </View>
-    </View>
+    </Modal>
   );
 };
 
-export default From;
+export default BottomSheet;

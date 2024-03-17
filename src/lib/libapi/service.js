@@ -1,12 +1,13 @@
 export class APIRequest {
-  get = async (url, headers) => {
+  get = async url => {
     const result = await fetch(url, {
       method: 'GET',
     });
     if (!result.ok) {
-      throw Error('Something went wrong');
+      return {error: true, response: []};
     } else {
-      return result.json();
+      const res = await result.json();
+      return {error: false, response: res};
     }
   };
 }

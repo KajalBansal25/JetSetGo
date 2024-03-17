@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Pressable, Text, TouchableOpacity, View} from 'react-native';
 import styles from './HomeScreen.style';
 import SvgHandler from '../../assets/svgs/SvgHandler';
@@ -6,22 +6,30 @@ import {svgXml} from '../../assets/svgs/list';
 import {useNavigation} from '@react-navigation/native';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import {formatDateToDayMonth} from '../../utils/commonUtil';
-import { useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {selectedDate} from './ducks/data/Home.reducer';
 
 const Home = () => {
-  const [from, setFrom] = useState('Hisar');
-  const [to, setTo] = useState('Delhi');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [err, setErr] = useState('');
+
+  const dispach = useDispatch();
 
   const routeData = useSelector(state => state.homeSlice);
-  console.log("🚀 ~ Home ~ routeData:", routeData)
-  
+
+  const {origin = '', destination = '', date = ''} = routeData;
 
   const navigation = useNavigation();
 
+  useEffect(() => {}, [err]);
+
   const handleClick = () => {
-    navigation.navigate('Search', {from, to, selectedDate});
+    if (origin && destination) {
+      setErr('');
+      navigation.navigate('Search');
+    } else {
+      setErr(true);
+    }
   };
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -32,7 +40,7 @@ const Home = () => {
   };
 
   const handleConfirm = date => {
-    setSelectedDate(date);
+    dispach(selectedDate(date));
     hideDatePicker();
   };
 
@@ -65,19 +73,29 @@ const Home = () => {
         <View style={styles.bookFlightCardHeader}>
           <Text style={styles.bookFlightCardHeaderText}>Book flights 🚀</Text>
         </View>
-        <View style={styles.fromTo}>
-          <Pressable onPress={onPressFrom}>
-            <Text>From:</Text>
-            <Text style={styles.fromToText}>{routeData.origin}</Text>
-          </Pressable>
-          <Pressable onPress={onPressTo}>
-            <Text>To:</Text>
-            <Text style={styles.fromToText}>{routeData.destination}</Text>
-          </Pressable>
-        </View>
+        <Pressable style={styles.fromTo} onPress={onPressFrom}>
+          <View>
+            <Text style={styles.textColor}>From:</Text>
+            <Text
+              style={
+                origin ? styles.fromToText : {color: 'grey', fontSize: 16}
+              }>
+              {origin || 'Select origin'}
+            </Text>
+          </View>
+          <View>
+            <Text style={styles.textColor}>To:</Text>
+            <Text
+              style={
+                destination ? styles.fromToText : {color: 'grey', fontSize: 16}
+              }>
+              {destination || 'Select destination'}
+            </Text>
+          </View>
+        </Pressable>
         <TouchableOpacity onPress={showDatePicker} style={styles.datePicker}>
           <Text style={styles.datePickerText}>
-            📅 {formatDateToDayMonth(selectedDate)}
+            📅 {formatDateToDayMonth(date)}
           </Text>
         </TouchableOpacity>
         <DateTimePicker
@@ -85,12 +103,20 @@ const Home = () => {
           mode="date"
           onConfirm={handleConfirm}
           onCancel={hideDatePicker}
+          minimumDate={new Date()}
         />
         <TouchableOpacity style={styles.searchFlight} onPress={handleClick}>
           <SvgHandler xml={svgXml.search} height={24} width={24} />
           <Text style={styles.searchFlightText}>Search Flights</Text>
         </TouchableOpacity>
       </View>
+      {err && (
+        <View>
+          <Text style={{color: 'red'}}>
+            Plz select origin,destination first
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
