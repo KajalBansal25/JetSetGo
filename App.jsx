@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
   StatusBar,
@@ -8,9 +8,15 @@ import {
 import AppNavigator from './src/config/route/Navigator';
 import {Provider} from 'react-redux';
 import rootStore from './src/config/store/initReduxStore';
+import SplashScreen from 'react-native-splash-screen';
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
+  useEffect(() => {
+    setTimeout(() => {
+      SplashScreen.hide();
+    }, 3000);
+  }, []);
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
