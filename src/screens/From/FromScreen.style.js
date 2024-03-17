@@ -7,12 +7,8 @@ const styles = StyleSheet.create({
   },
   backIconContainer: {
     flexDirection: 'row',
-    // alignItems: 'center',
-    // marginBottom: 24,
-    // marginTop:12
   },
   headerRight: {
-    // flex: 1,
     borderRadius: 20,
     marginLeft: 12,
     backgroundColor: '#e3e3e3',
@@ -45,6 +41,9 @@ const styles = StyleSheet.create({
   },
   origin: {color: 'black', fontWeight: 'bold', fontSize: 20},
   textColor: {color: 'black'},
+  buttonStyle: {marginTop: 16},
+  selectContainer: {flex: 1, marginVertical: 12},
+  anotherStyle: {marginBottom: 8},
 });
 
 export default styles;

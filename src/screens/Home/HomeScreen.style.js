@@ -77,6 +77,9 @@ const styles = StyleSheet.create({
   textColor: {
     color: 'black',
   },
+  errorColor: {color: 'red'},
+  extraStyle: {color: 'grey', fontSize: 16},
+  subHeaderRight:{flexDirection: 'row', alignItems: 'center'}
 });
 
 export default styles;

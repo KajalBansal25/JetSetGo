@@ -48,18 +48,6 @@ const Home = () => {
     navigation.navigate('From');
   };
 
-  const onPressTo = () => {
-    navigation.navigate('From');
-  };
-
-  const formatDate = currentDate => {
-    return currentDate.toLocaleDateString('en-US', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
-  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -76,19 +64,13 @@ const Home = () => {
         <Pressable style={styles.fromTo} onPress={onPressFrom}>
           <View>
             <Text style={styles.textColor}>From:</Text>
-            <Text
-              style={
-                origin ? styles.fromToText : {color: 'grey', fontSize: 16}
-              }>
+            <Text style={origin ? styles.fromToText : styles.extraStyle}>
               {origin || 'Select origin'}
             </Text>
           </View>
           <View>
             <Text style={styles.textColor}>To:</Text>
-            <Text
-              style={
-                destination ? styles.fromToText : {color: 'grey', fontSize: 16}
-              }>
+            <Text style={destination ? styles.fromToText : styles.extraStyle}>
               {destination || 'Select destination'}
             </Text>
           </View>
@@ -112,7 +94,7 @@ const Home = () => {
       </View>
       {err && (
         <View>
-          <Text style={{color: 'red'}}>
+          <Text style={styles.errorColor}>
             Plz select origin,destination first
           </Text>
         </View>

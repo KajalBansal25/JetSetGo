@@ -1,7 +1,9 @@
+import React from 'react';
 import {useEffect, useState} from 'react';
 import scalling from '../../config/normalize';
 import {Image, Text, TouchableOpacity} from 'react-native';
 import images from '../../assets/images';
+import {styles} from './Checkbox.style';
 
 const Checkbox = ({
   label = '',
@@ -24,7 +26,7 @@ const Checkbox = ({
 
   return (
     <TouchableOpacity
-      style={{flexDirection: 'row', alignItems: 'center', gap: 12}}
+      style={styles.container}
       onPress={handleSelect}
       activeOpacity={0.9}>
       <Image
@@ -32,7 +34,7 @@ const Checkbox = ({
         resizeMode="contain"
         style={{width: scalling.moderateScale(18)}}
       />
-      <Text style={{fontWeight: 'bold'}} {...textStyle}>
+      <Text style={styles.text} {...textStyle}>
         {label}
       </Text>
     </TouchableOpacity>

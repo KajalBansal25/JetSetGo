@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {FlatList, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import styles from './FromScreen.style';
 import SvgHandler from '../../assets/svgs/SvgHandler';
@@ -360,12 +360,12 @@ const From = () => {
   return (
     <View style={styles.container}>
       <View style={styles.backIconContainer}>
-        <TouchableOpacity onPress={handleBack} style={{marginTop: 16}}>
+        <TouchableOpacity onPress={handleBack} style={styles.buttonStyle}>
           <SvgHandler xml={svgXml.backIcon} height={32} width={32} />
         </TouchableOpacity>
 
-        <View style={{flex: 1, marginVertical: 12}}>
-          <View style={[styles.headerRight, {marginBottom: 8}]}>
+        <View style={styles.selectContainer}>
+          <View style={[styles.headerRight, styles.anotherStyle]}>
             <TextInput
               style={styles.headerText}
               onFocus={() => handleFocus('input1')}
