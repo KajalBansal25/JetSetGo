@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import styles from './ItemCard.style';
-import {formatDateToDayMonth, getTimeDifference} from '../../utils/commonUtil';
+import {getTimeDifference} from '../../utils/commonUtil';
 import moment from 'moment';
 
 const ItemCard = ({style, item}) => {
