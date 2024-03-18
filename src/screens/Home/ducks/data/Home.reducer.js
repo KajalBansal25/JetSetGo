@@ -8,7 +8,7 @@ const homeSlice = createSlice({
     origin: '',
     response: [],
     err: false,
-    date: new Date(),
+    date: new Date().toISOString(),
   },
   reducers: {
     fetchData(state, action) {
@@ -21,7 +21,7 @@ const homeSlice = createSlice({
         (state.origin = action.payload.origin);
     },
     selectedDate(state, action) {
-      state.date = action.payload;
+      state.date = action.payload.toISOString();
     },
   },
 });

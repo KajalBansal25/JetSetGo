@@ -33,7 +33,6 @@ export const styles = StyleSheet.create({
   },
   bottom: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     borderTopWidth: 1,
     borderColor: '#e3e3e3',
     padding: 12,
@@ -45,6 +44,8 @@ export const styles = StyleSheet.create({
     minWidth: '30%',
     alignItems: 'center',
     justifyContent: 'center',
+    flex: 1,
+    marginRight: 12,
   },
   apply: {
     backgroundColor: 'rgb(182, 125, 186)',
@@ -54,5 +55,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
+    flex: 1,
   },
 });

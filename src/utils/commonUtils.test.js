@@ -1,5 +1,5 @@
 import 'react-native';
-import sum from './commonUtil';
+import {sum} from './commonUtil';
 
 describe('Sum', () => {
   it('if we pass 2 number so result should be right', () => {

@@ -11,37 +11,49 @@ import SvgHandler from '../../assets/svgs/SvgHandler';
 import {svgXml} from '../../assets/svgs/list';
 import Checkbox from '../Checkbox/Checkbox.componnet';
 import {styles} from './BottomSheet.style';
+import Radio from '../Radio/Radio.component';
 
 const BottomSheet = ({visible, onClose, filterCriteria, data}) => {
-  const [selectedAirlines, setSelectedAirlines] = useState({});
+  const [sorting, setSorting] = useState(null);
+  const [filtering, setFiltering] = useState({});
 
-  const handleCheck = item => {
-    setSelectedAirlines(prevSelected => ({
-      ...prevSelected,
-      [item]: !prevSelected[item],
-    }));
+  const handleCheck = (item, isRadio = false) => {
+    if (isRadio) {
+      setSorting(item);
+    } else {
+      setFiltering(prevFiltering => ({
+        ...prevFiltering,
+        [item]: !prevFiltering[item],
+      }));
+    }
   };
 
   const handleClear = () => {
-    setSelectedAirlines({});
+    setFiltering({});
     filterCriteria([]);
   };
 
   const handleSelectAll = () => {
     const allSelected = data.reduce((acc, item) => {
-      acc[item] = true;
+      if (!['Low to High', 'High to Low'].includes(item)) {
+        acc[item] = true;
+      }
       return acc;
     }, {});
-    setSelectedAirlines(allSelected);
+    setFiltering(allSelected);
   };
 
   const applyFilter = () => {
-    const selected = Object.keys(selectedAirlines).filter(
-      key => selectedAirlines[key],
+    const selectedFilters = Object.keys(filtering).filter(
+      key => filtering[key],
     );
-    filterCriteria(selected);
+
+    filterCriteria(selectedFilters, sorting);
+
     onClose();
   };
+
+  let check = !['Low to High', 'High to Low']?.includes(data[0]);
 
   return (
     <Modal visible={visible} transparent={true}>
@@ -49,9 +61,11 @@ const BottomSheet = ({visible, onClose, filterCriteria, data}) => {
         <View style={styles.subContainer}>
           <View>
             <View style={styles.header}>
-              <Pressable onPress={handleSelectAll} style={styles.pressable}>
-                <Text style={styles.textColor}>select all</Text>
-              </Pressable>
+              {check && (
+                <Pressable onPress={handleSelectAll} style={styles.pressable}>
+                  <Text style={styles.textColor}>select all</Text>
+                </Pressable>
+              )}
               <Pressable onPress={onClose}>
                 <SvgHandler xml={svgXml.cross} height={20} width={20} />
               </Pressable>
@@ -61,19 +75,32 @@ const BottomSheet = ({visible, onClose, filterCriteria, data}) => {
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.scrollview}>
               {data.map((item, index) => (
-                <Checkbox
-                  key={index}
-                  label={item}
-                  handleCheck={() => handleCheck(item)}
-                  initialValue={!!selectedAirlines[item]}
-                />
+                <>
+                  {['Low to High', 'High to Low']?.includes(item) ? (
+                    <Radio
+                      key={index}
+                      label={item}
+                      handleCheck={() => handleCheck(item, true)}
+                      initialValue={sorting === item}
+                    />
+                  ) : (
+                    <Checkbox
+                      key={index}
+                      label={item}
+                      handleCheck={() => handleCheck(item)}
+                      initialValue={!!filtering[item]}
+                    />
+                  )}
+                </>
               ))}
             </ScrollView>
           </View>
           <View style={styles.bottom}>
-            <TouchableOpacity onPress={handleClear} style={styles.clear}>
-              <Text style={styles.textColor}>Clear</Text>
-            </TouchableOpacity>
+            {check && (
+              <TouchableOpacity onPress={handleClear} style={styles.clear}>
+                <Text style={styles.textColor}>Clear</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity style={styles.apply} onPress={applyFilter}>
               <SvgHandler xml={svgXml.filter} height={32} width={32} />
               <Text style={styles.textColor}>Apply filters</Text>

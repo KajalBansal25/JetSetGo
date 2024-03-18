@@ -32,7 +32,6 @@ const sortOrder = ['Low to High', 'High to Low'];
 const Search = () => {
   const navigation = useNavigation();
   const [showModal, setShowModal] = useState(false);
-  const [showUpperModal, setShowUpperModal] = useState(false);
   const [data, setData] = useState([]);
   const handleBack = () => {
     navigation.goBack();
@@ -41,7 +40,6 @@ const Search = () => {
 
   const seacrhScreenData = useSelector(state => state.homeSlice);
   const {loading, err, response, destination, origin, date} = seacrhScreenData;
-  console.log('🚀 ~ Search ~ loading:', loading);
   const [filteredData, setFilteredData] = useState(response);
   const [sortDirection, setSortDirection] = useState('Low to High');
 
@@ -76,31 +74,24 @@ const Search = () => {
   };
 
   const filterCriteria = useCallback(
-    criteria => {
-      const sortCriteria = criteria.find(
-        c => c === 'Low to High' || c === 'High to Low',
-      );
-      let sortDirectionValue = sortCriteria || sortDirection;
-
-      const airlinesCriteria = criteria.filter(
-        c => c !== 'Low to High' && c !== 'High to Low',
-      );
-
+    (selectedFilters, sorting) => {
       let filtered = filteredData.filter(
         flight =>
-          airlinesCriteria.length === 0 ||
-          airlinesCriteria.includes(flight.airline),
+          selectedFilters.length === 0 ||
+          selectedFilters.includes(flight.airline),
       );
 
-      filtered.sort((a, b) => {
-        return sortDirectionValue === 'Low to High'
-          ? a.price - b.price
-          : b.price - a.price;
-      });
+      if (sorting) {
+        filtered.sort((a, b) => {
+          return sorting === 'Low to High'
+            ? a.price - b.price
+            : b.price - a.price;
+        });
+      }
 
       setFilteredData(filtered);
-      if (sortDirection !== sortDirectionValue) {
-        setSortDirection(sortDirectionValue);
+      if (sortDirection !== sorting) {
+        setSortDirection(sorting);
       }
     },
     [filteredData, sortDirection],
@@ -119,11 +110,7 @@ const Search = () => {
               <SvgHandler xml={svgXml.backIcon} height={32} width={32} />
             </TouchableOpacity>
 
-            <Pressable
-              style={styles.headerRight}
-              onPress={() => {
-                setShowUpperModal(true);
-              }}>
+            <View style={styles.headerRight}>
               <View style={styles.subHeaderRight}>
                 <Text style={styles.headerText}>{origin}</Text>
                 <SvgHandler xml={svgXml.rightArrow} height={32} width={32} />
@@ -131,7 +118,7 @@ const Search = () => {
               </View>
 
               <Text style={styles.textColor}>{formatDateToDayMonth(date)}</Text>
-            </Pressable>
+            </View>
           </View>
           <>
             {filteredData?.length > 0 ? (
@@ -167,10 +154,6 @@ const Search = () => {
                   onClose={() => setShowModal(false)}
                   filterCriteria={filterCriteria}
                   data={data}
-                />
-                <UpperModal
-                  visible={showUpperModal}
-                  onClose={() => setShowUpperModal(false)}
                 />
               </>
             ) : (

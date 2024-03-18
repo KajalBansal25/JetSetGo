@@ -34,7 +34,7 @@ const HomeCard = () => {
   };
 
   const handleConfirm = date => {
-    dispach(selectedDate(date));
+    dispach(selectedDate(date.toISOString()));
     hideDatePicker();
   };
 
