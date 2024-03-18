@@ -8,6 +8,7 @@ import {useNavigation} from '@react-navigation/native';
 import {selectedDate} from '../../screens/Home/ducks/data/Home.reducer';
 import styles from './HomeCard.style';
 import {formatDateToDayMonth} from '../../utils/commonUtil';
+import Snackbar from 'react-native-snackbar';
 
 const HomeCard = () => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -23,6 +24,13 @@ const HomeCard = () => {
   const handleClick = () => {
     if (origin && destination) {
       navigation.navigate('Search');
+    } else {
+      Snackbar.show({
+        text: 'Plz select origin and destination first',
+        duration: Snackbar.LENGTH_SHORT,
+        textColor: 'white',
+        backgroundColor: 'red',
+      });
     }
   };
   const showDatePicker = () => {
@@ -72,13 +80,10 @@ const HomeCard = () => {
         onCancel={hideDatePicker}
         minimumDate={new Date()}
       />
-      <TouchableOpacity
-        style={styles.searchFlight}
-        onPress={handleClick}
-        disabled={!origin || !destination}>
+      <Pressable style={styles.searchFlight} onPress={handleClick}>
         <SvgHandler xml={svgXml.search} height={24} width={24} />
         <Text style={styles.searchFlightText}>Search Flights</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };
